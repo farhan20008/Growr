@@ -56,9 +56,9 @@ export default function ProfilePage() {
       {/* Current Stats */}
       <div className="grid grid-cols-3 gap-3">
         {[
-          { label: 'Current', value: `${userProfile.currentWeight}kg` },
-          { label: 'Goal', value: `${userProfile.goalWeight}kg` },
-          { label: 'To go', value: `+${(userProfile.goalWeight - userProfile.currentWeight).toFixed(1)}kg` },
+          { label: 'Current', value: `${profile.currentWeight}kg` },
+          { label: 'Goal', value: `${profile.goalWeight}kg` },
+          { label: 'To go', value: `+${(profile.goalWeight - profile.currentWeight).toFixed(1)}kg` },
         ].map(s => (
           <div key={s.label} className="rounded-2xl bg-card p-3 shadow-sm text-center">
             <p className="text-lg font-bold font-heading text-foreground">{s.value}</p>
