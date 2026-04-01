@@ -74,6 +74,7 @@ export default function OnboardingPage() {
   const [name, setName] = useState('');
   const [weight, setWeight] = useState('');
   const [calorieGoal, setCalorieGoal] = useState('');
+  const [proteinGoal, setProteinGoal] = useState('');
   const navigate = useNavigate();
   const slide = slides[current];
   const isLast = current === slides.length - 1;
