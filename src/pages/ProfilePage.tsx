@@ -48,8 +48,8 @@ export default function ProfilePage() {
           <User className="h-8 w-8 text-primary" />
         </div>
         <div>
-          <h1 className="text-xl font-bold font-heading text-foreground">Profile</h1>
-          <p className="text-sm text-muted-foreground">{userProfile.currentWeight}kg · Lean bulk</p>
+          <h1 className="text-xl font-bold font-heading text-foreground">{profile.name}</h1>
+          <p className="text-sm text-muted-foreground">{profile.currentWeight}kg · Lean bulk</p>
         </div>
       </div>
 
