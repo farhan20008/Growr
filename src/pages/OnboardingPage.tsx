@@ -80,7 +80,7 @@ export default function OnboardingPage() {
   const isLast = current === slides.length - 1;
   const isForm = slide.isForm;
 
-  const formValid = name.trim().length > 0 && Number(weight) > 0 && Number(calorieGoal) > 0;
+  const formValid = name.trim().length > 0 && Number(weight) > 0 && Number(calorieGoal) > 0 && Number(proteinGoal) > 0;
 
   const complete = () => {
     const profile = {
