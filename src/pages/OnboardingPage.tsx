@@ -87,6 +87,7 @@ export default function OnboardingPage() {
       name: name.trim() || 'User',
       currentWeight: Number(weight) || 68,
       calorieGoal: Number(calorieGoal) || 2400,
+      proteinGoal: Number(proteinGoal) || 130,
     };
     localStorage.setItem(PROFILE_KEY, JSON.stringify(profile));
     localStorage.setItem(ONBOARDING_KEY, 'true');
