@@ -58,10 +58,14 @@ export type Database = {
       }
       profiles: {
         Row: {
+          activity_level: string | null
+          age: number | null
           calorie_goal: number
           created_at: string
           current_weight: number
+          goal: string | null
           goal_weight: number
+          height: number | null
           id: string
           name: string
           protein_goal: number
@@ -70,10 +74,14 @@ export type Database = {
           water_goal: number
         }
         Insert: {
+          activity_level?: string | null
+          age?: number | null
           calorie_goal?: number
           created_at?: string
           current_weight?: number
+          goal?: string | null
           goal_weight?: number
+          height?: number | null
           id?: string
           name?: string
           protein_goal?: number
@@ -82,10 +90,14 @@ export type Database = {
           water_goal?: number
         }
         Update: {
+          activity_level?: string | null
+          age?: number | null
           calorie_goal?: number
           created_at?: string
           current_weight?: number
+          goal?: string | null
           goal_weight?: number
+          height?: number | null
           id?: string
           name?: string
           protein_goal?: number

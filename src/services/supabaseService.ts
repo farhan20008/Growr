@@ -95,10 +95,10 @@ export async function upsertProfile(userId: string, profile: any) {
     protein_goal: profile.proteinGoal,
     water_goal: profile.waterGoal,
     goal_weight: profile.goalWeight,
-    height: profile.height || null,
-    age: profile.age || null,
-    activity_level: profile.activity_level || null,
-    goal: profile.goal || null,
+    height: profile.height ?? null,
+    age: profile.age ?? null,
+    activity_level: profile.activity_level ?? profile.activityLevel ?? null,
+    goal: profile.goal ?? null,
     updated_at: new Date().toISOString(),
   };
 
