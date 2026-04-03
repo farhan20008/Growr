@@ -45,10 +45,13 @@ export default function ProgressPage() {
   // Note: energy tracking not implemented yet, will be 0
   const avgEnergy = "0.0";
 
-  const weightData = weeklyData.filter(d => d.weight).map(d => ({
-    day: new Date(d.date).toLocaleDateString('en', { weekday: 'short' }),
-    weight: d.weight,
-  }));
+  // Weight tracking not yet in getWeeklyData — use profile weight as placeholder
+  const weightData = profile.currentWeight
+    ? weeklyData.map(d => ({
+        day: new Date(d.date).toLocaleDateString('en', { weekday: 'short' }),
+        weight: profile.currentWeight,
+      }))
+    : [];
 
   const calData = weeklyData.map(d => ({
     day: new Date(d.date).toLocaleDateString('en', { weekday: 'short' }),
