@@ -1,12 +1,38 @@
-import { TrendingUp, Scale, Flame, Beef, Dumbbell, Zap, Camera } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { TrendingUp, Scale, Flame, Beef, Dumbbell, Zap, Camera, Sparkles, Loader2, RefreshCw } from 'lucide-react';
 import { LineChart, Line, XAxis, ResponsiveContainer, Tooltip, BarChart, Bar, Cell } from 'recharts';
 import DisciplineTrend from '@/components/progress/DisciplineTrend';
 import ConsistencyHeatmap from '@/components/progress/ConsistencyHeatmap';
 import { useAppStore } from '@/hooks/useAppStore';
+import { generateWeeklyReview } from '@/utils/coachSystem';
 
 export default function ProgressPage() {
   const { getWeeklyData, profile } = useAppStore();
   const weeklyData = getWeeklyData();
+  const { weeklyScores } = useAppStore();
+
+  const [weeklyReview, setWeeklyReview] = useState<string | null>(null);
+  const [reviewLoading, setReviewLoading] = useState(false);
+
+  const fetchWeeklyReview = async () => {
+    setReviewLoading(true);
+    const review = await generateWeeklyReview(
+      weeklyData.map(d => ({
+        date: d.date,
+        calories: d.calories,
+        protein: d.protein,
+        water: d.water,
+        score: weeklyScores[d.date] || 0,
+        workoutCompleted: d.workoutCompleted,
+      }))
+    );
+    setWeeklyReview(review);
+    setReviewLoading(false);
+  };
+
+  useEffect(() => {
+    fetchWeeklyReview();
+  }, []);
 
   const avg = (arr: number[]) => {
     if (arr.length === 0) return 0;
@@ -61,6 +87,45 @@ export default function ProgressPage() {
 
       {/* Consistency Heatmap */}
       <ConsistencyHeatmap />
+
+      {/* AI Weekly Review Card */}
+      {!reviewLoading && weeklyReview ? (
+        <div className="rounded-2xl bg-card p-4 shadow-sm border border-primary/20">
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-2">
+              <Sparkles className="h-4 w-4 text-primary" />
+              <h3 className="text-sm font-semibold text-foreground">Weekly AI Review</h3>
+            </div>
+            <button
+              onClick={fetchWeeklyReview}
+              className="p-1.5 rounded-lg hover:bg-secondary transition-colors"
+              title="Refresh review"
+            >
+              <RefreshCw className="h-3.5 w-3.5 text-muted-foreground" />
+            </button>
+          </div>
+          <p className="text-sm text-foreground leading-relaxed">{weeklyReview}</p>
+        </div>
+      ) : reviewLoading ? (
+        <div className="rounded-2xl bg-card p-6 shadow-sm flex items-center justify-center gap-3">
+          <Loader2 className="h-5 w-5 animate-spin text-primary" />
+          <p className="text-sm text-muted-foreground">AI is analyzing your week...</p>
+        </div>
+      ) : (
+        <div className="rounded-2xl bg-card p-4 shadow-sm border border-dashed border-border">
+          <div className="flex items-center gap-2 mb-2">
+            <Sparkles className="h-4 w-4 text-muted-foreground" />
+            <h3 className="text-sm font-semibold text-muted-foreground">Weekly Growr.ai Review</h3>
+          </div>
+          <p className="text-sm text-muted-foreground">No Growr.ai weekly reviews available.</p>
+          <button
+            onClick={fetchWeeklyReview}
+            className="mt-3 text-xs font-medium text-primary hover:text-primary/80 transition-colors"
+          >
+            Try again
+          </button>
+        </div>
+      )}
 
       {/* Weight Trend */}
       <div className="rounded-2xl bg-card p-4 shadow-sm">

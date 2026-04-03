@@ -17,6 +17,12 @@ export interface MealEntry {
   serving: string;
   mealType: 'breakfast' | 'lunch' | 'snacks' | 'dinner';
   timestamp: string;
+  carbs?: number;
+  fat?: number;
+  fiber?: number;
+  healthScore?: number;
+  healthNote?: string;
+  items?: string[];
 }
 
 export interface Exercise {

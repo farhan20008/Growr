@@ -80,7 +80,7 @@ export default function MealPhotoTab() {
 
       if (!response.ok) {
         let errBody: any = {};
-        try { errBody = await response.json(); } catch {}
+        try { errBody = await response.json(); } catch { }
         throw new Error(errBody?.error || `Request failed (${response.status})`);
       }
 
@@ -115,6 +115,12 @@ export default function MealPhotoTab() {
       serving: result.serving,
       mealType: selectedMeal,
       timestamp: new Date().toISOString(),
+      carbs: result.carbs,
+      fat: result.fat,
+      fiber: result.fiber,
+      healthScore: result.healthScore,
+      healthNote: result.healthNote,
+      items: result.items,
     };
     addMeal(entry);
     setAdded(true);
@@ -185,7 +191,7 @@ export default function MealPhotoTab() {
           <div className="rounded-2xl bg-card p-6 shadow-sm text-center">
             <Loader2 className="h-8 w-8 animate-spin text-primary mx-auto mb-3" />
             <p className="text-sm font-medium text-foreground">Analyzing your meal…</p>
-            <p className="text-xs text-muted-foreground mt-1">AI is estimating nutrition values</p>
+            <p className="text-xs text-muted-foreground mt-1">Growr.ai is estimating nutrition values</p>
           </div>
         </div>
       )}
@@ -251,9 +257,8 @@ export default function MealPhotoTab() {
                   <button
                     key={type}
                     onClick={() => setSelectedMeal(type)}
-                    className={`flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium transition-all ${
-                      selectedMeal === type ? 'bg-primary text-primary-foreground' : 'bg-secondary text-muted-foreground'
-                    }`}
+                    className={`flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium transition-all ${selectedMeal === type ? 'bg-primary text-primary-foreground' : 'bg-secondary text-muted-foreground'
+                      }`}
                   >
                     <span>{mealEmojis[type]}</span>
                     <span className="capitalize">{type}</span>

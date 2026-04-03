@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Plus, Search, X, Minus, Clock, Flame, Beef, UtensilsCrossed } from 'lucide-react';
+import { Plus, Search, X, Minus, Clock, Flame, Beef, UtensilsCrossed, Star, Droplets, Wheat } from 'lucide-react';
 import { useAppStore } from '@/hooks/useAppStore';
 import { commonFoods, FoodItem, MealEntry } from '@/data/mockData';
 import {
@@ -9,6 +9,24 @@ import {
   DialogTitle,
   DialogDescription,
 } from '@/components/ui/dialog';
+
+const COACH_PRIORITY_EMOJI: Record<string, string> = {
+  perfect: '🎯',
+  protein: '🥩',
+  calories: '🍽️',
+  hydration: '💧',
+  workout: '🏋️',
+  macros: '⚖️',
+};
+
+const COACH_PRIORITY_CLS: Record<string, string> = {
+  perfect: 'bg-success/10 border-success/20',
+  protein: 'bg-primary/10 border-primary/20',
+  calories: 'bg-amber-50/50 border-amber-200 dark:bg-amber-500/10 dark:border-amber-500/20',
+  hydration: 'bg-blue-50/50 border-blue-200 dark:bg-blue-500/10 dark:border-blue-500/20',
+  workout: 'bg-info/10 border-info/20',
+  macros: 'bg-accent/50 border-accent',
+};
 
 const mealTypes = ['breakfast', 'lunch', 'snacks', 'dinner'] as const;
 const mealEmojis = { breakfast: '🌅', lunch: '☀️', snacks: '🍌', dinner: '🌙' };
@@ -24,7 +42,7 @@ function formatDate(timestamp: string): string {
 }
 
 export default function MealsPage() {
-  const { meals, addMeal, removeMeal, totalCalories, totalProtein } = useAppStore();
+  const { meals, addMeal, removeMeal, totalCalories, totalProtein, coachAdvice } = useAppStore();
   const [activeMeal, setActiveMeal] = useState<typeof mealTypes[number]>('lunch');
   const [search, setSearch] = useState('');
   const [showAdd, setShowAdd] = useState(false);
@@ -88,6 +106,21 @@ export default function MealsPage() {
         </p>
       </div>
 
+      {/* Coach Advice Card */}
+      <div className={`rounded-2xl p-4 border ${COACH_PRIORITY_CLS[coachAdvice.priority] || COACH_PRIORITY_CLS['macros']}`}>
+        <p className="text-sm font-semibold text-foreground mb-1">
+          {COACH_PRIORITY_EMOJI[coachAdvice.priority]} Coach Advice
+        </p>
+        <p className="text-sm text-foreground/90">{coachAdvice.message}</p>
+        {coachAdvice.suggestions.length > 0 && (
+          <div className="flex flex-wrap gap-1.5 mt-3">
+            {coachAdvice.suggestions.map((s, i) => (
+              <span key={i} className="text-xs bg-background/60 dark:bg-black/20 px-2.5 py-1 rounded-full text-foreground font-medium">{s}</span>
+            ))}
+          </div>
+        )}
+      </div>
+
       {/* Meal Type Tabs */}
       <div className="flex gap-2 overflow-x-auto pb-1 -mx-5 px-5 scrollbar-hide">
         {mealTypes.map(type => (
@@ -117,26 +150,58 @@ export default function MealsPage() {
 
         {/* Logged items — clickable to open detail modal */}
         <div className="space-y-2 mb-3">
-          {meals.filter(m => m.mealType === activeMeal).map(m => (
-            <div
-              key={m.id}
-              className="flex items-center justify-between py-2 px-3 rounded-xl bg-secondary/50 cursor-pointer hover:bg-secondary/80 transition-colors group"
-              onClick={() => setSelectedMeal(m)}
-            >
-              <div>
-                <p className="text-sm font-medium text-foreground group-hover:text-primary transition-colors">
-                  {m.quantity > 1 ? `${m.quantity}x ` : ''}{m.foodName}
-                </p>
-                <p className="text-xs text-muted-foreground">{m.calories} cal · {m.protein}g protein</p>
-              </div>
-              <button
-                onClick={(e) => { e.stopPropagation(); removeMeal(m.id); }}
-                className="p-1.5 rounded-lg hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors"
+          {meals.filter(m => m.mealType === activeMeal).map(m => {
+            const isAnalyzed = m.carbs !== undefined || m.fat !== undefined;
+            return (
+              <div
+                key={m.id}
+                className="rounded-xl bg-secondary/50 cursor-pointer hover:bg-secondary/80 transition-colors group"
+                onClick={() => setSelectedMeal(m)}
               >
-                <Minus className="h-4 w-4" />
-              </button>
-            </div>
-          ))}
+                {/* Top row: name + remove */}
+                <div className="flex items-center justify-between px-3 pt-2">
+                  <p className="text-sm font-medium text-foreground group-hover:text-primary transition-colors">
+                    {m.quantity > 1 ? `${m.quantity}x ` : ''}{m.foodName}
+                  </p>
+                  <button
+                    onClick={(e) => { e.stopPropagation(); removeMeal(m.id); }}
+                    className="p-1.5 rounded-lg hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors"
+                  >
+                    <Minus className="h-4 w-4" />
+                  </button>
+                </div>
+
+                {isAnalyzed ? (
+                  /* Full macros grid for AI-analyzed meals */
+                  <div className="grid grid-cols-4 gap-1.5 px-3 pb-3 mt-1">
+                    <div className="rounded-lg bg-background/60 p-1.5 text-center">
+                      <Flame className="h-3 w-3 text-orange-500 mx-auto" />
+                      <p className="text-xs font-bold text-foreground">{m.calories}</p>
+                      <p className="text-[8px] text-muted-foreground">KCAL</p>
+                    </div>
+                    <div className="rounded-lg bg-background/60 p-1.5 text-center">
+                      <Beef className="h-3 w-3 text-emerald-500 mx-auto" />
+                      <p className="text-xs font-bold text-foreground">{m.protein}g</p>
+                      <p className="text-[8px] text-muted-foreground">PROTEIN</p>
+                    </div>
+                    <div className="rounded-lg bg-background/60 p-1.5 text-center">
+                      <Wheat className="h-3 w-3 text-amber-500 mx-auto" />
+                      <p className="text-xs font-bold text-foreground">{m.carbs ?? 0}g</p>
+                      <p className="text-[8px] text-muted-foreground">CARBS</p>
+                    </div>
+                    <div className="rounded-lg bg-background/60 p-1.5 text-center">
+                      <Droplets className="h-3 w-3 text-blue-400 mx-auto" />
+                      <p className="text-xs font-bold text-foreground">{m.fat ?? 0}g</p>
+                      <p className="text-[8px] text-muted-foreground">FAT</p>
+                    </div>
+                  </div>
+                ) : (
+                  /* Simple fallback for quick-add foods */
+                  <p className="text-xs text-muted-foreground px-3 pb-2">{m.calories} cal · {m.protein}g protein</p>
+                )}
+              </div>
+            );
+          })}
           {meals.filter(m => m.mealType === activeMeal).length === 0 && (
             <p className="text-sm text-muted-foreground text-center py-4">No items logged yet</p>
           )}
